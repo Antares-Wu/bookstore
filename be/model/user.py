@@ -12,13 +12,14 @@ from be.model import db_conn
 #       "timestamp": [ts]} to a JWT
 #   }
 
-
+#定义json web token生成函数
 def jwt_encode(user_id: str, terminal: str) -> str:
     encoded = jwt.encode(
         {"user_id": user_id, "terminal": terminal, "timestamp": time.time()},
         key=user_id,
-        algorithm="HS256",
+        algorithm="HS256"
     )
+    print(encoded)
     return encoded.decode("utf-8")
 
 
@@ -28,17 +29,19 @@ def jwt_encode(user_id: str, terminal: str) -> str:
 #       "terminal": [terminal code],
 #       "timestamp": [ts]} to a JWT
 #   }
+
+#定义jwt解码函数
 def jwt_decode(encoded_token, user_id: str) -> str:
     decoded = jwt.decode(encoded_token, key=user_id, algorithms="HS256")
     return decoded
 
-
+#定义用户类
 class User(db_conn.DBConn):
     token_lifetime: int = 3600  # 3600 second
 
     def __init__(self):
         db_conn.DBConn.__init__(self)
-
+    #定义检查token函数
     def __check_token(self, user_id, db_token, token) -> bool:
         try:
             if db_token != token:
@@ -52,7 +55,7 @@ class User(db_conn.DBConn):
         except jwt.exceptions.InvalidSignatureError as e:
             logging.error(str(e))
             return False
-
+    #定义注册函数
     def register(self, user_id: str, password: str):
         try:
             terminal = "terminal_{}".format(str(time.time()))

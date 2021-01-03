@@ -20,7 +20,7 @@ error_code = {
     527: "",
     528: "",
 }
-
+#定义不同的错误函数
 
 def error_non_exist_user_id(user_id):
     return 511, error_code[511].format(user_id)

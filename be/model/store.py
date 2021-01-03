@@ -1,11 +1,13 @@
 import logging
 import os
 import sqlite3 as sqlite
+import sqlalchemy
 
 
 class Store:
     database: str
-
+    #添加数据库be.db
+    #初始化表
     def __init__(self, db_path):
         self.database = os.path.join(db_path, "be.db")
         self.init_tables()
@@ -13,28 +15,51 @@ class Store:
     def init_tables(self):
         try:
             conn = self.get_db_conn()
+            #创建user表，四个属性
+            #user_id 文本，主键
+            #password 文本
+            #balance 整数
+            #token 文本
+            #terminal 文本
             conn.execute(
                 "CREATE TABLE IF NOT EXISTS user ("
                 "user_id TEXT PRIMARY KEY, password TEXT NOT NULL, "
                 "balance INTEGER NOT NULL, token TEXT, terminal TEXT);"
             )
-
+            #创建user_store表，有两个属性
+            #user_id 文本
+            #store_id
+            #主键是（user_id,store_id）
             conn.execute(
                 "CREATE TABLE IF NOT EXISTS user_store("
                 "user_id TEXT, store_id, PRIMARY KEY(user_id, store_id));"
             )
-
+            #创建store表，有四个属性
+            #store_id 文本
+            #book_id 文本
+            #book_info 文本
+            #stock_level 整数
+            #主键（store_id, book_id）
             conn.execute(
                 "CREATE TABLE IF NOT EXISTS store( "
                 "store_id TEXT, book_id TEXT, book_info TEXT, stock_level INTEGER,"
                 " PRIMARY KEY(store_id, book_id))"
             )
-
+            #创建new_order表，有三个属性
+            #order_id 文本 主键
+            #user_id 文本
+            #store_id 文本
+            #
             conn.execute(
                 "CREATE TABLE IF NOT EXISTS new_order( "
                 "order_id TEXT PRIMARY KEY, user_id TEXT, store_id TEXT)"
             )
-
+            #创建new_order_detail表 有三个属性
+            #order_id 文本
+            #book_id 文本
+            #count 整数
+            #price 整数
+            #主键 （order_id , book_id ）
             conn.execute(
                 "CREATE TABLE IF NOT EXISTS new_order_detail( "
                 "order_id TEXT, book_id TEXT, count INTEGER, price INTEGER,  "

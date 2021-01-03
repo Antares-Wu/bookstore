@@ -3,6 +3,7 @@
 [![codecov](https://codecov.io/gh/DaSE-DBMS/bookstore/branch/master/graph/badge.svg)](https://codecov.io/gh/DaSE-DBMS/bookstore)
 
 ## 功能
+
 实现一个提供网上购书功能的网站后端。<br>
 网站支持书商在上面开商店，购买者可能通过网站购买。<br>
 买家和卖家都可以注册自己的账号。<br>
@@ -96,9 +97,10 @@ bookstore
     bash script/test.sh
 
  
+
  bookstore/fe/data/book.db中包含测试的数据，从豆瓣网抓取的图书信息，
  其DDL为：
- 
+
     create table book
     (
         id TEXT primary key,
@@ -121,6 +123,7 @@ bookstore
     );
 
    
+
 更多的数据可以从网盘下载，下载地址为，链接：
 
     https://pan.baidu.com/s/1bjCOW8Z5N_ClcqU54Pdt8g
@@ -128,7 +131,7 @@ bookstore
 提取码：
 
     hj6q
-    
+
 这份数据同bookstore/fe/data/book.db的schema相同，但是有更多的数据(约3.5GB, 40000+行)
 
 
