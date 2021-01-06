@@ -10,15 +10,7 @@ error_code = {
     517: "stock level low, book id {}",
     518: "invalid order id {}",
     519: "not sufficient funds, order id {}",
-    520: "",
-    521: "",
-    522: "",
-    523: "",
-    524: "",
-    525: "",
-    526: "",
-    527: "",
-    528: "",
+    528: "there is an error",
 }
 #定义不同的错误函数
 

@@ -115,8 +115,8 @@ class User(db_conn.DBConn):
             if self.cursor.rowcount == 0: ##
                 return error.error_authorization_fail() + ("", )
             self.conn.commit()
-        except sqlite.Error as e:  ##
-            return 528, "{}".format(str(e)), ""
+        except psycopg2.errors.UniqueViolation:
+            return error.error_exist_user_id(user_id)
         # except BaseException as e:
         #     return 530, "{}".format(str(e)), ""
         return 200, "ok", token
@@ -137,8 +137,8 @@ class User(db_conn.DBConn):
                 return error.error_authorization_fail()
 
             self.conn.commit()
-        except sqlite.Error as e:  ##
-            return 528, "{}".format(str(e))
+        except psycopg2.errors.UniqueViolation:
+            return error.error_exist_user_id(user_id)
         # except BaseException as e:
         #     return 530, "{}".format(str(e))
         return 200, "ok"
@@ -155,8 +155,8 @@ class User(db_conn.DBConn):
                 self.conn.commit()
             else:
                 return error.error_authorization_fail()
-        except sqlite.Error as e:  ##
-            return 528, "{}".format(str(e))
+        except psycopg2.errors.UniqueViolation:
+            return error.error_exist_user_id(user_id)
         # except BaseException as e:
         #     return 530, "{}".format(str(e))
         return 200, "ok"
@@ -177,8 +177,8 @@ class User(db_conn.DBConn):
                 return error.error_authorization_fail()
 
             self.conn.commit()
-        except sqlite.Error as e:   ##
-            return 528, "{}".format(str(e))
+        except psycopg2.errors.UniqueViolation:
+            return error.error_exist_user_id(user_id)
         # except BaseException as e:
         #     return 530, "{}".format(str(e))
         return 200, "ok"

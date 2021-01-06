@@ -2,6 +2,9 @@ import sqlite3 as sqlite
 import uuid
 import json
 import logging
+
+import psycopg2
+
 from be.model import db_conn
 from be.model import error
 
@@ -58,10 +61,8 @@ class Buyer(db_conn.DBConn):
                 (uid, store_id, user_id))
             self.conn.commit()
             order_id = uid
-
-        except sqlite.Error as e: ##
-            logging.info("528, {}".format(str(e)))
-            return 528, "{}".format(str(e)), ""
+        except psycopg2.errors.UniqueViolation:
+            return error.error_exist_store_id(store_id)
         # except BaseException as e: ##
         #     logging.info("530, {}".format(str(e)))
         #     return 530, "{}".format(str(e)), ""
@@ -141,9 +142,8 @@ class Buyer(db_conn.DBConn):
                 return error.error_invalid_order_id(order_id)
 
             self.conn.commit()
-
-        except sqlite.Error as e:
-            return 528, "{}".format(str(e))
+        except psycopg2.errors.UniqueViolation:
+            return error.error_exist_user_id(user_id)
 
         # except BaseException as e:
         #     return 530, "{}".format(str(e))
@@ -172,8 +172,8 @@ class Buyer(db_conn.DBConn):
                 return error.error_non_exist_user_id(user_id)
 
             self.conn.commit()
-        except sqlite.Error as e:
-            return 528, "{}".format(str(e))
+        except psycopg2.errors.UniqueViolation:
+            return error.error_exist_user_id(user_id)
         # except BaseException as e:
         #     return 530, "{}".format(str(e))
 

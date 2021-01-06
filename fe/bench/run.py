@@ -1,7 +1,6 @@
 from fe.bench.workload import Workload
 from fe.bench.session import Session
 
-
 def run_bench():
     wl = Workload()
     wl.gen_database()
@@ -18,5 +17,6 @@ def run_bench():
         ss.join()
 
 
-#if __name__ == "__main__":
-#    run_bench()
+if __name__ == "__main__":
+    #serve.be_run()
+    run_bench()

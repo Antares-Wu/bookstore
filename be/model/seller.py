@@ -1,4 +1,7 @@
 import sqlite3 as sqlite
+
+import psycopg2
+
 from be.model import error
 from be.model import db_conn
 
@@ -23,8 +26,8 @@ class Seller(db_conn.DBConn):
             self.cursor.execute("INSERT into store(store_id, book_id, book_info, stock_level)"
                               "VALUES ('%s', '%s', '%s',%d)" % (store_id, book_id, book_json_str, stock_level))
             self.conn.commit()
-        except sqlite.Error as e:  ##
-            return 528, "{}".format(str(e))
+        except psycopg2.errors.UniqueViolation:
+            return error.error_exist_book_id(book_id)
         # except BaseException as e:
         #     return 530, "{}".format(str(e))
         return 200, "ok"
@@ -43,10 +46,8 @@ class Seller(db_conn.DBConn):
             self.cursor.execute("UPDATE store SET stock_level = stock_level + %d "
                               "WHERE store_id = '%s' AND book_id = '%s'" % (add_stock_level, store_id, book_id))
             self.conn.commit()
-        except sqlite.Error as e: ##
-            return 528, "{}".format(str(e))
-        # except BaseException as e:
-        #     return 530, "{}".format(str(e))
+        except psycopg2.errors.UniqueViolation:
+            return error.error_exist_book_id(book_id)
         return 200, "ok"
     #定义创建商店函数
     #传入两个参数 user_id, store_id
@@ -61,8 +62,8 @@ class Seller(db_conn.DBConn):
             self.cursor.execute("INSERT into user_store(store_id, user_id)"
                               "VALUES ('%s', '%s')" % (store_id, user_id))
             self.conn.commit()
-        except sqlite.Error as e: ##
-            return 528, "{}".format(str(e))
+        except psycopg2.errors.UniqueViolation:
+            return error.error_exist_store_id(store_id)
         # except BaseException as e:
         #     return 530, "{}".format(str(e))
         return 200, "ok"
