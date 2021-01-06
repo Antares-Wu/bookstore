@@ -1,10 +1,8 @@
 import jwt
 import time
 import logging
-import sqlite3 as sqlite
 
 import psycopg2
-import sqlalchemy
 
 from be.model import error
 from be.model import db_conn
@@ -60,6 +58,7 @@ class User(db_conn.DBConn):
             logging.error(str(e))
             return False
     #定义注册函数
+    #得到用户的用户名，密码之后，获取用户的终端类型，然后生成用户的token（令牌），在usr中插入用户信息
     def register(self, user_id: str, password: str):
         try:
             terminal = "terminal_{}".format(str(time.time()))
@@ -98,7 +97,8 @@ class User(db_conn.DBConn):
             return error.error_authorization_fail()
 
         return 200, "ok"
-
+    #定义登录函数
+    #得到用户的id，密码，终端之后，检查用户的密码输入是否正确，重新生成令牌并在usr中更新
     def login(self, user_id: str, password: str, terminal: str) -> (int, str, str):
         token = ""
         try:
@@ -117,10 +117,9 @@ class User(db_conn.DBConn):
             self.conn.commit()
         except psycopg2.errors.UniqueViolation:
             return error.error_exist_user_id(user_id)
-        # except BaseException as e:
-        #     return 530, "{}".format(str(e)), ""
         return 200, "ok", token
-
+    #定义logout函数，登出函数
+    #检查用户令牌，然后生成新的用户令牌并在usr中更新
     def logout(self, user_id: str, token: str) -> bool:
         try:
             code, message = self.check_token(user_id, token)
@@ -139,10 +138,9 @@ class User(db_conn.DBConn):
             self.conn.commit()
         except psycopg2.errors.UniqueViolation:
             return error.error_exist_user_id(user_id)
-        # except BaseException as e:
-        #     return 530, "{}".format(str(e))
         return 200, "ok"
-
+    #定义注销函数
+    #检查用户输入的密码是否正确，然后在usr中删除用户信息
     def unregister(self, user_id: str, password: str) -> (int, str):
         try:
             code, message = self.check_password(user_id, password)
@@ -157,10 +155,9 @@ class User(db_conn.DBConn):
                 return error.error_authorization_fail()
         except psycopg2.errors.UniqueViolation:
             return error.error_exist_user_id(user_id)
-        # except BaseException as e:
-        #     return 530, "{}".format(str(e))
         return 200, "ok"
-
+    #定义更改密码函数
+    #检查用户输入的密码，生成新的令牌，获取新的密码，并在usr中更新
     def change_password(self, user_id: str, old_password: str, new_password: str) -> bool:
         try:
             code, message = self.check_password(user_id, old_password)
@@ -179,7 +176,5 @@ class User(db_conn.DBConn):
             self.conn.commit()
         except psycopg2.errors.UniqueViolation:
             return error.error_exist_user_id(user_id)
-        # except BaseException as e:
-        #     return 530, "{}".format(str(e))
         return 200, "ok"
 

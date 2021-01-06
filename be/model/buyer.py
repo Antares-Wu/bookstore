@@ -1,4 +1,3 @@
-import sqlite3 as sqlite
 import uuid
 import json
 import logging
@@ -12,7 +11,16 @@ from be.model import error
 class Buyer(db_conn.DBConn):
     def __init__(self):
         db_conn.DBConn.__init__(self)
-    #下单操作
+
+
+
+
+    #定义下单函数
+    # 检查user_id,store_id，在store中查询书的id，存货量，描述，价格
+    # 如果存货量小于订单量，则返回错误
+    # 更新存货量，stock_level - count，
+    # 将订单号，书号，订单量，价格插入new_order_detail
+    # 将订单号，store_id,user_id插入new_order
     def new_order(self, user_id: str, store_id: str, id_and_count: [(str, int)]) -> (int, str, str):
         order_id = ""
         try: #判断用户id和门店id是否存在
@@ -63,13 +71,25 @@ class Buyer(db_conn.DBConn):
             order_id = uid
         except psycopg2.errors.UniqueViolation:
             return error.error_exist_store_id(store_id)
-        # except BaseException as e: ##
-        #     logging.info("530, {}".format(str(e)))
-        #     return 530, "{}".format(str(e)), ""
 
         return 200, "ok", order_id
-     #传入参数 user_id, password, order_id
-    #付款操作
+
+
+    #定义付款函数
+    #传入参数 user_id, password, order_id
+
+    # 在new_order中获取订单信息
+    ## 查询order_id,user_id,store_id
+    #验证并查询buyer的账户信息
+    ## 验证buyer_id是不是相符合
+    ## 查询buyer的账户信息，balance和password
+    # 查询user_store表，寻找到seller的信息
+    # 在new_order_detail中找到book_id,count,price, 以order_id为索引
+    # 计算总价
+    # 更新买家和卖家的账户余额
+    # 从new_order里删除这个order
+    # 从new_order_detail中删除
+
     def payment(self, user_id: str, password: str, order_id: str) -> (int, str):
         try:#查询订单信息中的值
             #查询order_id, user_id, store_id
@@ -125,13 +145,13 @@ class Buyer(db_conn.DBConn):
             #再次检查，如果账户余额小于总价，则返回not_sufficent_funds错误
             if self.cursor.rowcount == 0:
                 return error.error_not_sufficient_funds(order_id)
-            #更新用户
+            #更新卖家的账户余额
             self.cursor.execute("UPDATE usr set balance = balance+%d"
                                   "WHERE user_id = '%s'" %
-                                  (total_price, buyer_id))
+                                  (total_price, seller_id)) ##
             #检查id是否存在
             if self.cursor.rowcount == 0:
-                return error.error_non_exist_user_id(buyer_id)
+                return error.error_non_exist_user_id(seller_id)
             #从new_order里删除这个order
             self.cursor.execute("DELETE FROM new_order WHERE order_id = '%s'" % (order_id, ))
             if self.cursor.rowcount == 0:
@@ -145,12 +165,14 @@ class Buyer(db_conn.DBConn):
         except psycopg2.errors.UniqueViolation:
             return error.error_exist_user_id(user_id)
 
-        # except BaseException as e:
-        #     return 530, "{}".format(str(e))
-
         return 200, "ok"
-    #充钱操作
-    #传入三个参数，user_id, password, add_value
+
+
+
+    # 充值函数
+    # 传入三个参数，user_id, password, add_value
+
+    # 检验用户信息，在usr中增加用户的balance
     def add_funds(self, user_id, password, add_value) -> (int, str):
         try:
             self.cursor = self.conn.cursor()
@@ -174,7 +196,5 @@ class Buyer(db_conn.DBConn):
             self.conn.commit()
         except psycopg2.errors.UniqueViolation:
             return error.error_exist_user_id(user_id)
-        # except BaseException as e:
-        #     return 530, "{}".format(str(e))
 
         return 200, "ok"

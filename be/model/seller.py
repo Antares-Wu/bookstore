@@ -1,4 +1,3 @@
-import sqlite3 as sqlite
 
 import psycopg2
 
@@ -13,6 +12,7 @@ class Seller(db_conn.DBConn):
 
     #定义增加书的函数
     #传入五个参数 user_id, store_id, book_id, book_json_str, stock_level
+    #检查user_id,store_id,bood_id是否存在，在store中插入book的信息
     def add_book(self, user_id: str, store_id: str, book_id: str, book_json_str: str, stock_level: int):
         try:
             if not self.user_id_exist(user_id):
@@ -28,11 +28,13 @@ class Seller(db_conn.DBConn):
             self.conn.commit()
         except psycopg2.errors.UniqueViolation:
             return error.error_exist_book_id(book_id)
-        # except BaseException as e:
-        #     return 530, "{}".format(str(e))
         return 200, "ok"
+
     #定义增加书的存货的函数
     #传入4个参数，user_id, store_id, book_id, add_stock_level
+
+    #检查user_id,store_id,book_id是否存在，
+    #将原来的stock_level的值变成stock_level+add_store_level，并在store中更新
     def add_stock_level(self, user_id: str, store_id: str, book_id: str, add_stock_level: int):
         try:
             if not self.user_id_exist(user_id):
@@ -49,8 +51,10 @@ class Seller(db_conn.DBConn):
         except psycopg2.errors.UniqueViolation:
             return error.error_exist_book_id(book_id)
         return 200, "ok"
+
     #定义创建商店函数
     #传入两个参数 user_id, store_id
+    #检查用户id，检查store_id是否已存在，将store_id,user_id插入user_store
     def create_store(self, user_id: str, store_id: str) -> (int, str):
         try:
             if not self.user_id_exist(user_id):
@@ -64,6 +68,4 @@ class Seller(db_conn.DBConn):
             self.conn.commit()
         except psycopg2.errors.UniqueViolation:
             return error.error_exist_store_id(store_id)
-        # except BaseException as e:
-        #     return 530, "{}".format(str(e))
         return 200, "ok"
