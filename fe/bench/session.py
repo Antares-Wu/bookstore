@@ -5,9 +5,8 @@ import time
 import threading
 
 
-class Session(threading.Thread):
+class Session:
     def __init__(self, wl: Workload):
-        threading.Thread.__init__(self)
         self.workload = wl
         self.new_order_request = []
         self.payment_request = []
@@ -26,7 +25,11 @@ class Session(threading.Thread):
             self.new_order_request.append(new_order)
 
     def run(self):
-        self.run_gut()
+        self.thread = threading.Thread(self.run_gut())
+        self.thread.start()
+
+    def join(self):
+        self.thread.join()
 
     def run_gut(self):
         for new_order in self.new_order_request:
