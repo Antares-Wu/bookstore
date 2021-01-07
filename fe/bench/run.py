@@ -9,12 +9,9 @@ sys.path.append(rootPath2)
 from fe.bench.workload import Workload
 from fe.bench.session import Session
 
-
 def run_bench():
     wl = Workload()
     wl.gen_database()
-    ss = Session(wl)
-    ss.gen_procedure()
 
     sessions = []
     for i in range(0, wl.session):
@@ -22,11 +19,12 @@ def run_bench():
         sessions.append(ss)
 
     for ss in sessions:
-        ss.run()
+        ss.start()
 
     for ss in sessions:
         ss.join()
 
 
 if __name__ == "__main__":
+    #serve.be_run()
     run_bench()
